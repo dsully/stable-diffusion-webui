@@ -62,7 +62,7 @@ def save_files(js_data, images, do_make_zip, index):
         at_start = file.tell() == 0
         writer = csv.writer(file)
         if at_start:
-            writer.writerow(["prompt", "seed", "width", "height", "sampler", "cfgs", "steps", "filename", "negative_prompt"])
+            writer.writerow(["prompt", "seed", "width", "height", "sampler", "cfgs", "steps", "filename", "negative_prompt", "model_hash", "model_name"])
 
         for image_index, filedata in enumerate(images, start_index):
             image = image_from_url_text(filedata)
@@ -79,7 +79,9 @@ def save_files(js_data, images, do_make_zip, index):
                 filenames.append(os.path.basename(txt_fullfn))
                 fullfns.append(txt_fullfn)
 
-        writer.writerow([data["prompt"], data["seed"], data["width"], data["height"], data["sampler_name"], data["cfg_scale"], data["steps"], filenames[0], data["negative_prompt"]])
+        model_hash, model_name = [item.split(": ")[1] for item in p.infotexts[0].split("\n")[1].split(", ") if item.startswith("Model")]
+        
+        writer.writerow([data["prompt"], data["seed"], data["width"], data["height"], data["sampler_name"], data["cfg_scale"], data["steps"], filenames[0], data["negative_prompt"], model_hash, model_name])
 
     # Make Zip
     if do_make_zip:
